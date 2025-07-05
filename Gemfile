@@ -14,4 +14,4 @@ gem "activerecord", ">= 7.2"
 gem "activejob", ">= 7.2"
 gem "railties", ">= 7.2"
 
-gem "sqlite3", "~> 1.4"
+gem "sqlite3"
