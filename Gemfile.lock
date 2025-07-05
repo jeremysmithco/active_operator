@@ -157,7 +157,7 @@ DEPENDENCIES
   minitest (~> 5.0)
   railties (>= 7.2)
   rake (~> 13.0)
-  sqlite3 (~> 1.4)
+  sqlite3
 
 BUNDLED WITH
    2.6.9
