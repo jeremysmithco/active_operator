@@ -10,27 +10,27 @@ module ActiveOperator
     def processed? = processed_at?
     def errored?   = errored_at?
 
-    def perform
-      request!
-      process!
+    def perform(force: false)
+      request!(force:)
+      process!(force:)
     rescue
       errored!
       raise
     end
 
-    def perform_later
-      ActiveOperator::PerformOperationJob.perform_later(self)
+    def perform_later(force: false)
+      ActiveOperator::PerformOperationJob.perform_later(self, force:)
     end
 
-    def request!
-      return false if received?
+    def request!(force: false)
+      return false if received? && !force
 
       update!(response: request, received_at: Time.current)
     end
 
-    def process!
+    def process!(force: false)
       return false if !received?
-      return false if processed?
+      return false if processed? && !force
 
       ActiveRecord::Base.transaction do
         process
