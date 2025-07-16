@@ -22,7 +22,7 @@ rails db:migrate
 
 ### 1. Define an Operation
 
-Create operation classes that inherit from `ApplicationOperation`:
+Generate an operation class by running `rails generate active_operator:operation [name]`.
 
 ```ruby
 class Geocoding::V1 < ApplicationOperation
