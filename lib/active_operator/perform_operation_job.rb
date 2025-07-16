@@ -4,8 +4,8 @@ module ActiveOperator
   class PerformOperationJob < ActiveJob::Base
     discard_on ActiveRecord::RecordNotFound
 
-    def perform(operation)
-      operation.perform
+    def perform(operation, force: false)
+      operation.perform(force:)
     end
   end
 end

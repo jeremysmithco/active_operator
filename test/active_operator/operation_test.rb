@@ -51,6 +51,26 @@ module ActiveOperator
       end
     end
 
+    test "#perform with force succeeds when already received and processed" do
+      with_operation_methods(Geocoding::V2, GeocodingValid) do
+        location = create_location
+
+        first_time = 5.minutes.ago
+        location.geocoding.update!(received_at: first_time, processed_at: first_time)
+
+        assert_not_nil location.geocoding.received_at
+        assert_not_nil location.geocoding.processed_at
+
+        location.geocoding.perform(force: true)
+
+        assert_equal 40.59806, location.latitude
+        assert_equal -74.68148, location.longitude
+        assert_equal "America/New_York", location.timezone
+        assert location.geocoding.received_at.after?(first_time)
+        assert location.geocoding.processed_at.after?(first_time)
+      end
+    end
+
     test "#perform fails on invalid request" do
       with_operation_methods(Geocoding::V2, GeocodingInvalidRequest) do
         location = create_location
@@ -105,8 +125,17 @@ module ActiveOperator
       location = create_location
       location.geocoding.save!
 
-      assert_enqueued_with job: ActiveOperator::PerformOperationJob, args: [location.geocoding] do
+      assert_enqueued_with job: ActiveOperator::PerformOperationJob, args: [location.geocoding, { force: false }] do
         location.geocoding.perform_later
+      end
+    end
+
+    test "#perform_later with force" do
+      location = create_location
+      location.geocoding.save!
+
+      assert_enqueued_with job: ActiveOperator::PerformOperationJob, args: [location.geocoding, { force: true }] do
+        location.geocoding.perform_later(force: true)
       end
     end
   end
